@@ -1,10 +1,8 @@
 from typing import Annotated
-
 from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import HTMLResponse
 
 app = FastAPI()
-
 
 @app.post("/files/")
 async def create_files(
@@ -12,14 +10,16 @@ async def create_files(
 ):
     return {"file_sizes": [len(file) for file in files]}
 
-
+#alterando pra salvar o arquivo uplodado
 @app.post("/uploadfiles/")
-async def create_upload_files(
-    files: Annotated[
-        list[UploadFile], File(description="Multiple files as UploadFile")
-    ],
-):
-    return {"filenames": [file.filename for file in files]}
+async def create_upload_files(files: list[UploadFile] = File(...)):
+    try:
+        for file in files:
+            with open(f"./data/{file.filename}", "wb") as buffer:
+                buffer.write(file.file.read())
+        return {"filenames": [file.filename for file in files]}
+    except Exception as e:
+        return {"error": str(e)}
 
 @app.get("/items/{item_id}")
 async def read_item(item_id: int):
