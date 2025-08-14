@@ -1,2 +1,3 @@
 live.sqlite
 backend/venv/
+backend/__pycache__
